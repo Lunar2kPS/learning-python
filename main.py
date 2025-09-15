@@ -1,3 +1,9 @@
+# WARNING: On Linux, you may need to run this first for TKinter to be included in your OS install of Python:
+# sudo apt update
+# sudo apt install python3-tk
+# On Windows and MacOS, TKinter should be included by default.
+# (And note, if you want to actually download/install all available updates, use `sudo apt upgrade -y` or `sudo apt full-upgrade -y` to include removing old versions and install new dependencies)
+
 import tkinter as tk
 
 mainWindow = tk.Tk()
