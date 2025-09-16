@@ -6,23 +6,31 @@
 
 import tkinter as tk
 
-mainWindow = tk.Tk()
 
-mainWindow.geometry("800x600")
-mainWindow.title("My First Python Program")
+class ExampleGUI:
+    def __init__(self):
+        print("Constructor!")
+        self.mainWindow = tk.Tk()
+        self.mainWindow.geometry("800x600")
+        self.mainWindow.title("My First Python Program")
 
-label = tk.Label(mainWindow, text="Hello World!", font=('Arial', 18))
-label.pack(padx=20, pady=20)
+        label = tk.Label(self.mainWindow, text="Hello World!", font=('Arial', 18))
+        label.pack(padx=20, pady=20)
 
-# (tk.Text(...) is a multi-line text area)
-textbox = tk.Text(mainWindow, font=('Arial', 16), height = 3)
-textbox.pack(padx=10)
+        # (tk.Text(...) is a multi-line text area)
+        textbox = tk.Text(self.mainWindow, font=('Arial', 16), height = 3)
+        textbox.pack(padx=10)
 
-# (tk.Entry(...) is a ONE-line text field)
-entry = tk.Entry(mainWindow)
-entry.pack(padx=10, pady=10)
+        # (tk.Entry(...) is a ONE-line text field)
+        entry = tk.Entry(self.mainWindow)
+        entry.pack(padx=10, pady=10)
 
-button = tk.Button(mainWindow, text="Click Me!", font=('Arial', 16))
-button.pack(padx=10, pady=10)
+        button = tk.Button(self.mainWindow, text="Click Me!", font=('Arial', 16))
+        button.pack(padx=10, pady=10)
 
-mainWindow.mainloop()
+    def run(self):
+        print("Running!")
+        self.mainWindow.mainloop()
+
+gui = ExampleGUI()
+gui.run()
