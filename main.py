@@ -4,33 +4,27 @@
 # On Windows and MacOS, TKinter should be included by default.
 # (And note, if you want to actually download/install all available updates, use `sudo apt upgrade -y` or `sudo apt full-upgrade -y` to include removing old versions and install new dependencies)
 
-import tkinter as tk
+# --- --- ---
+# Import Options in Python...
+# Each .py file is a module. We can import them a couple of different ways.
+# Each folder can act like a package now as well, no longer requiring __init__.py since Python 3.3.
 
+# OPTION 1:     Import the entire file (module), but requires prefacing every API call with the fully qualified path each time:
+# import gui.firstbasics
+# window = gui.firstbasics.ExampleGUI()
+# window.run()
 
-class ExampleGUI:
-    def __init__(self):
-        print("Constructor!")
-        self.mainWindow = tk.Tk()
-        self.mainWindow.geometry("800x600")
-        self.mainWindow.title("My First Python Program")
+# OPTION 2:     Import the API Member INSIDE the file (module):
+from gui.firstbasics import ExampleGUI
+window = ExampleGUI()
+window.run()
 
-        label = tk.Label(self.mainWindow, text="Hello World!", font=('Arial', 18))
-        label.pack(padx=20, pady=20)
+# OPTION 3:     Alias for the entire file (module):
+# import gui.firstbasics as fb
+# window = fb.ExampleGUI()
+# window.run()
 
-        # (tk.Text(...) is a multi-line text area)
-        textbox = tk.Text(self.mainWindow, font=('Arial', 16), height = 3)
-        textbox.pack(padx=10)
-
-        # (tk.Entry(...) is a ONE-line text field)
-        entry = tk.Entry(self.mainWindow)
-        entry.pack(padx=10, pady=10)
-
-        button = tk.Button(self.mainWindow, text="Click Me!", font=('Arial', 16))
-        button.pack(padx=10, pady=10)
-
-    def run(self):
-        print("Running!")
-        self.mainWindow.mainloop()
-
-gui = ExampleGUI()
-gui.run()
+# OPTION 4:     Alias for JUST the API Member INSIDE the file (module):
+# from gui.firstbasics import ExampleGUI as EG
+# window = EG()
+# window.run()
