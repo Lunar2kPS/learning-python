@@ -8,25 +8,41 @@ import tkinter as tk
 
 class ExampleGUI:
     def __init__(self):
-        print("Constructor!")
         self.mainWindow = tk.Tk()
         self.mainWindow.geometry("800x600")
-        self.mainWindow.title("My First Python Program")
+        self.mainWindow.title("Search In Files")
+        self.defaultFont="Arial"
+        self.defaultFontSize = 16
 
-        label = tk.Label(self.mainWindow, text="Hello World!", font=('Arial', 18))
-        label.pack(padx=20, pady=20)
+        label = tk.Label(self.mainWindow, text="Search In Files", font=(self.defaultFont, self.defaultFontSize + 2))
+        label.pack(padx=20, pady=10)
 
-        # (tk.Text(...) is a multi-line text area)
-        textbox = tk.Text(self.mainWindow, font=('Arial', 16), height = 3)
-        textbox.pack(padx=10)
+        self.mainFrame = tk.Frame(self.mainWindow)
+        # for i in range(2):
+        #     self.mainFrame.columnconfigure(i, weight=1) # NOTE: This makes each column stretch along the x-axis.
 
-        # (tk.Entry(...) is a ONE-line text field)
-        entry = tk.Entry(self.mainWindow)
-        entry.pack(padx=10, pady=10)
+        self.mainFrame.columnconfigure(0, weight=0, minsize=150)
+        self.mainFrame.columnconfigure(1, weight=1)
 
-        button = tk.Button(self.mainWindow, text="Click Me!", font=('Arial', 16))
-        button.pack(padx=10, pady=10)
+        self.patternLabel = tk.Label(self.mainFrame, text="Pattern", font=(self.defaultFont, self.defaultFontSize))
+        self.patternLabel.grid(row=0, column=0, sticky="w", padx=(0, 20))
+        self.patternField = tk.Entry(self.mainFrame)
+        self.patternField.grid(row=0, column=1, sticky="we")
+
+        self.folderLabel = tk.Label(self.mainFrame, text="Folder", font=(self.defaultFont, self.defaultFontSize))
+        self.folderLabel.grid(row=1, column=0, sticky="w", padx=(0, 20))
+        self.folderField = tk.Entry(self.mainFrame)
+        self.folderField.grid(row=1, column=1, sticky="we")
+        self.mainFrame.pack(fill="x", padx=30, pady=(0, 20)) # NOTE: (top, bottom) -- So this is 20px bottom padding.
+
+        self.outputPathsLabel = tk.Label(self.mainFrame, text="Output Paths", font=(self.defaultFont, self.defaultFontSize))
+        self.outputPathsLabel.grid(row=2, column=0, sticky="w", padx=(0, 20))
+
+        self.submitButton = tk.Button(self.mainWindow, text="Search", font=(self.defaultFont, self.defaultFontSize))
+        self.submitButton.pack()
+
+        self.resultsTextArea = tk.Text(self.mainWindow, font=(self.defaultFont, self.defaultFontSize))
+        self.resultsTextArea.pack(padx=20, pady=20)
 
     def run(self):
-        print("Running!")
         self.mainWindow.mainloop()
