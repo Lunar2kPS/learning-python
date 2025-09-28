@@ -12,10 +12,10 @@ class ExampleGUI:
         self.mainWindow.geometry("800x600")
         self.mainWindow.title("Search In Files")
         self.defaultFont="Arial"
-        self.defaultFontSize = 16
+        self.defaultFontSize = 14
 
-        label = tk.Label(self.mainWindow, text="Search In Files", font=(self.defaultFont, self.defaultFontSize + 2))
-        label.pack(padx=20, pady=10)
+        self.label = tk.Label(self.mainWindow, text="Search In Files", font=(self.defaultFont, self.defaultFontSize + 2))
+        self.label.pack(padx=20, pady=10)
 
         self.mainFrame = tk.Frame(self.mainWindow)
         # for i in range(2):
@@ -35,14 +35,20 @@ class ExampleGUI:
         self.folderField.grid(row=1, column=1, sticky="we")
         self.mainFrame.pack(fill="x", padx=30, pady=(0, 20)) # NOTE: (top, bottom) -- So this is 20px bottom padding.
 
-        self.outputPathsLabel = tk.Label(self.mainFrame, text="Output Paths", font=(self.defaultFont, self.defaultFontSize))
+        self.outputPathsLabel = tk.Label(self.mainFrame, text="Output Paths Type", font=(self.defaultFont, self.defaultFontSize))
         self.outputPathsLabel.grid(row=2, column=0, sticky="w", padx=(0, 20))
 
-        self.submitButton = tk.Button(self.mainWindow, text="Search", font=(self.defaultFont, self.defaultFontSize))
+        self.submitButton = tk.Button(self.mainWindow, text="Search", font=(self.defaultFont, self.defaultFontSize), command=self.onClick)
         self.submitButton.pack()
 
         self.resultsTextArea = tk.Text(self.mainWindow, font=(self.defaultFont, self.defaultFontSize))
         self.resultsTextArea.pack(padx=20, pady=20)
+
+    def onClick(self):
+        # NOTE: "1.0" means Line 1, Index 0.
+        self.resultsTextArea.delete("1.0", tk.END)
+        self.resultsTextArea.insert("1.0", "Pattern: " + self.patternField.get() + "\nFolder: " + self.folderField.get() + "\n")
+        print("CLICKED!")
 
     def run(self):
         self.mainWindow.mainloop()
