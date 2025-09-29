@@ -26,12 +26,12 @@ class ExampleGUI:
 
         self.patternLabel = tk.Label(self.mainFrame, text="Pattern", font=(self.defaultFont, self.defaultFontSize))
         self.patternLabel.grid(row=0, column=0, sticky="w", padx=(0, 20))
-        self.patternField = tk.Entry(self.mainFrame)
+        self.patternField = tk.Entry(self.mainFrame, font=(self.defaultFont, self.defaultFontSize))
         self.patternField.grid(row=0, column=1, sticky="we")
 
         self.folderLabel = tk.Label(self.mainFrame, text="Folder", font=(self.defaultFont, self.defaultFontSize))
         self.folderLabel.grid(row=1, column=0, sticky="w", padx=(0, 20))
-        self.folderField = tk.Entry(self.mainFrame)
+        self.folderField = tk.Entry(self.mainFrame, font=(self.defaultFont, self.defaultFontSize))
         self.folderField.grid(row=1, column=1, sticky="we")
         self.mainFrame.pack(fill="x", padx=30, pady=(0, 20)) # NOTE: (top, bottom) -- So this is 20px bottom padding.
 
