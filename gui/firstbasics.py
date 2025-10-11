@@ -4,7 +4,22 @@
 # On Windows and MacOS, TKinter should be included by default.
 # (And note, if you want to actually download/install all available updates, use `sudo apt upgrade -y` or `sudo apt full-upgrade -y` to include removing old versions and install new dependencies)
 
+import asyncio
+import threading
 import tkinter as tk
+
+def readFile(path: str) -> str:
+    with open(path, mode="r", encoding="utf-8") as f:
+        return f.read()
+
+async def readFileAsync(path: str) -> str:
+    # NOTE: Requires Python 3.9+
+    # return await asyncio.to_thread(readFile, path)
+
+    # NOTE: We can do this in Python 3.8 or perhaps earlier, instead:
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, readFile, path)
+
 
 class ExampleGUI:
     def __init__(self):
@@ -49,6 +64,15 @@ class ExampleGUI:
         self.resultsTextArea.delete("1.0", tk.END)
         self.resultsTextArea.insert("1.0", "Pattern: " + self.patternField.get() + "\nFolder: " + self.folderField.get() + "\n")
         print("CLICKED!")
+
+        def runTask():
+            asyncio.run(self.onClickAsync())
+        threading.Thread(target=runTask).start()
+
+    async def onClickAsync(self):
+        fileText = await readFileAsync("test.txt")
+        print("fileText = " + fileText)
+
 
     def run(self):
         self.mainWindow.mainloop()
