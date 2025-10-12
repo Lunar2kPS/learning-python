@@ -6,20 +6,53 @@
 
 import asyncio
 import threading
+import os
+import re
 import tkinter as tk
 
 def readFile(path: str) -> str:
-    with open(path, mode="r", encoding="utf-8") as f:
-        return f.read()
+    try:
+        with open(path, mode="r", encoding="utf-8") as f:
+            return f.read()
+    except UnicodeDecodeError:
+        print("[WARNING] Skipping file (can't decode in UTF-8): " + path)
+        return ""
 
 async def readFileAsync(path: str) -> str:
-    # NOTE: Requires Python 3.9+
-    # return await asyncio.to_thread(readFile, path)
-
-    # NOTE: We can do this in Python 3.8 or perhaps earlier, instead:
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, readFile, path)
 
+def getFiles(path: str) -> list:
+    innerFiles = []
+    for f in os.listdir(path):
+        fullPath = os.path.join(path, f)
+        if (os.path.isfile(fullPath)):
+            innerFiles.append(f)
+    return innerFiles
+
+def getFilesRecursively(path: str) -> list:
+    relativeFiles = []
+    for subfolder, folders, files in os.walk(path):
+        if re.search(r"\.git", subfolder):
+            continue
+        for fileName in files:
+            fullPath = os.path.join(subfolder, fileName)
+            relativePath = os.path.relpath(fullPath, path)
+            relativeFiles.append(relativePath)
+    return relativeFiles
+
+async def searchInFiles(path: str, searchPattern: str) -> list:
+    relativePaths = []
+    for innerPath, folders, files in os.walk(path):
+        if re.search(r"\.git", innerPath):
+            continue
+        for fileName in files:
+            fullPath = os.path.join(innerPath, fileName)
+            relativePath = os.path.relpath(fullPath, path)
+            fileText = await readFileAsync(relativePath)
+            if re.search(searchPattern, fileText):
+                relativePaths.append(relativePath)
+    return relativePaths
 
 class ExampleGUI:
     def __init__(self):
@@ -65,13 +98,23 @@ class ExampleGUI:
         self.resultsTextArea.insert("1.0", "Pattern: " + self.patternField.get() + "\nFolder: " + self.folderField.get() + "\n")
         print("CLICKED!")
 
-        def runTask():
-            asyncio.run(self.onClickAsync())
-        threading.Thread(target=runTask).start()
+        # NOTE: Read the current values in the main UI thread:
+        pattern = self.patternField.get()
+        folder = self.folderField.get()
 
-    async def onClickAsync(self):
-        fileText = await readFileAsync("test.txt")
-        print("fileText = " + fileText)
+        # Pass the values to the thread:
+        def runTask(pattern, folder):
+            asyncio.run(self.onClickAsync(pattern, folder))
+
+        # NOTE: This runs a thread with runTask(),
+        #   which itself runs a new temporary event loop (asyncio.create_task(runTask()) would REQUIRE an already-existing, running event loop),
+        #   and that event loop is able to run asynchronously with our onClickAsync(...).
+        threading.Thread(target=lambda: runTask(pattern, folder)).start()
+
+    async def onClickAsync(self, searchPattern: str, folderPath: str):
+        results = await searchInFiles(folderPath, searchPattern)
+        for filePath in results:
+            print("filePath = " + filePath)
 
 
     def run(self):
