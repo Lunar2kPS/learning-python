@@ -8,26 +8,10 @@ from typing import Any, Iterator
 from botocore.client import BaseClient, Config
 from botocore.exceptions import ClientError
 
-def listFiles(s3Client: BaseClient, bucket: str, folderPath: str, recursive: bool) -> Iterator[str]:
-    continuationToken = None
-    delimiter = None if recursive else "/"
-    while True:
-        args = {
-            "Bucket": bucket,
-            "Prefix": folderPath,
-        }
-        if delimiter:
-            args["Delimiter"] = delimiter
-        if continuationToken:
-            args["ContinuationToken"] = continuationToken
-        
-        response = s3Client.list_objects_v2(**args)
-        for obj in response.get("Contents", []):
-            yield obj["Key"]
-
-        continuationToken = response.get("NextContinuationToken")
-        if not continuationToken:
-            break
+def downloadFile(s3Client: BaseClient, bucket: str, key: str) -> bytes:
+    resp = s3Client.get_object(Bucket=bucket, Key=key)
+    with resp["Body"] as body:
+        return body.read()
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d [%(levelname)s] %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
@@ -45,16 +29,16 @@ def main():
         description="Demo Python program of AWS S3 file listing."
     )
     parser.add_argument(
-        "--recursive",
-        action="store_true",
-        default=False,
-        required=False,
-        help="Should the AWS S3 file listing be done recursively?",
+        "--path",
+        type=str,
+        default="",
+        required=True,
+        help="The AWS S3 file path (key) to the file you would like to test downloading with get_object.",
     )
     args = parser.parse_args()
 
-    recursive = args.recursive
-    logger.info(f"Example Python Program for AWS S3 File Listing (Recursive: {recursive})")
+    path = args.path
+    logger.info(f"Example Python Program for AWS S3 File Downloads")
     s3Config = Config(s3={
         "addressing_style": "path" # NOTE: as opposed to "virtual"
     })
@@ -73,9 +57,14 @@ def main():
         config=s3Config
     )
 
-    rootFolder = ""
-    logger.info(f"Iterating over files under folder at \"{rootFolder}\":")
-    for path in listFiles(s3Client, s3Bucket, rootFolder, recursive):
-        logger.info(f"    {path}")
+    logger.info(f"Downloading file at at \"{path}\":")
+    fileBytes = downloadFile(s3Client, s3Bucket, path)
+    filePath = Path(path)
+    localFolder = Path("__pycache__")
+    localFolder.mkdir(parents=True, exist_ok=True)
+    localPath = localFolder / filePath.name
+    with open(localPath, "wb") as file:
+        file.write(fileBytes)
+    logger.info(f"Wrote file bytes to: \"{localPath}\".")
 
 main()
