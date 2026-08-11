@@ -9,9 +9,9 @@ from botocore.client import BaseClient, Config
 from botocore.exceptions import ClientError
 
 def downloadFile(s3Client: BaseClient, bucket: str, key: str) -> bytes:
-    resp = s3Client.get_object(Bucket=bucket, Key=key)
-    with resp["Body"] as body:
-        return body.read()
+    response = s3Client.get_object(Bucket=bucket, Key=key)
+    with response["Body"] as body:
+        return body.read() # WARNING: This returns the entire file in RAM, which may or may not be large.
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d [%(levelname)s] %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
@@ -19,8 +19,8 @@ def main():
 
     try:
         from dotenv import load_dotenv
-        _env_path = Path(__file__).parent / ".env"
-        load_dotenv(_env_path)
+        env_path = Path(__file__).parent / ".env"
+        load_dotenv(env_path)
     except ImportError:
         logger.error("Failed to import .env variables. Make sure that python-dotenv is installed.")
         pass

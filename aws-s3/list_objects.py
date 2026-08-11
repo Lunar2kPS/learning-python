@@ -35,11 +35,10 @@ def main():
 
     try:
         from dotenv import load_dotenv
-        _env_path = Path(__file__).parent / ".env"
-        load_dotenv(_env_path)
+        env_path = Path(__file__).parent / ".env"
+        load_dotenv(env_path)
     except ImportError:
         logger.error("Failed to import .env variables. Make sure that python-dotenv is installed.")
-        pass
 
     parser = argparse.ArgumentParser(
         description="Demo Python program of AWS S3 file listing."
